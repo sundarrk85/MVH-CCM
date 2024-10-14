@@ -1,0 +1,396 @@
+{% assign userEmail = user.emailaddress1 %}
+{% fetchxml requestData %}
+fetch version=1.0 output-format=xml-platform mapping=logical distinct=false
+  entity name=mvh_suppliercatalogue
+    attribute name=mvh_suppliercatalogueid 
+    attribute name=createdon 
+    attribute name=mvh_noofitems 
+    attribute name=modifiedon 
+    attribute name=mvh_lastupdatedversion 
+    attribute name=mvh_cataloguploadstatus 
+    attribute name=mvh_cataloguenumber 
+    attribute name=mvh_cataloguename 
+    attribute name=crff0_catalogue 
+    link-entity name=mvh_businessunit from=mvh_businessunitid to=cr42e_bu link-type=outer
+      attribute name=mvh_name alias=mvh_buname 
+    link-entity
+          filter
+        condition attribute='mvh_suppliermail' operator='eq' value='{{ userEmail }}' 
+      filter
+    order attribute=createdon descending=false 
+  entity
+fetch
+{% endfetchxml %}
+
+!DOCTYPE html
+html lang=en
+head
+  meta charset=UTF-8
+  meta name=viewport content=width=device-width, initial-scale=1.0
+  titleUploaded Catalogue Listtitle
+  link rel=stylesheet href=httpscdnjs.cloudflare.comajaxlibsfont-awesome5.15.4cssall.min.css
+  link href=httpsfonts.googleapis.comiconfamily=Material+Icons rel=stylesheet
+  style
+     {
+      box-sizing border-box;
+    }
+
+    root {
+      --catalog-margin 25px;
+    }
+
+    .margin-class {
+      margin var(--catalog-margin);
+    }
+
+    .search-container {
+      position relative;
+      width calc(100% - 50px);
+      margin var(--catalog-margin);
+      margin-bottom 12px;
+    }
+
+    .search-container input[type=text] {
+      width 100%;
+      font-size 16px;
+      padding 12px 40px 12px 20px;
+      border 1px solid #ddd;
+    }
+
+    .search-container .fa-search {
+      position absolute;
+      right 15px;
+      top 50%;
+      font-size 25px;
+      transform translateY(-50%) rotate(90deg);
+      color #aaa;
+    }
+h1 {
+            font-size 20px;
+        }
+        h1 strong {
+            font-weight bold;
+        }
+    #myTable {
+      border-spacing 0px;
+      width 100%;
+      border 0px solid #ddd;
+    }
+
+    #myTable th {
+      text-align left;
+      padding 12px;
+      position relative;
+      cursor pointer;
+    }
+
+    #myTable th .sort-icon {
+      margin-left 5px;
+      color #A4A4A4;
+    }
+
+    #myTable thhover .sort-icon, 
+    #myTable thactive .sort-icon {
+      color black;
+    }
+
+    #myTable td {
+      text-align left;
+      padding 12px;
+    }
+
+    #myTable tr {
+      border-bottom 1px solid #ddd;
+    }
+
+    #myTable tbody trnth-child(odd) {
+      background-color #f2f2f2;
+    }
+
+    #myTable tr.header, #myTable trhover {
+      cursor pointer;
+    }
+
+    .pagination {
+      display flex;
+      justify-content space-between;
+      align-items center;
+      padding 10px 0;
+      margin-top 10px;
+      background-color #fff;
+      border 0.5px solid #ddd;
+    }
+
+    .pagination .info {
+      display flex;
+      align-items center
+      flex-grow 1;
+      text-align left;
+      padding-left 15px;
+    }
+
+    .pagination .controls {
+      display flex;
+      align-items center;
+      justify-content flex-start;
+      justify-content center;
+    }
+
+    .pagination .controls .arrow {
+      background-color transparent;
+      border none;
+      color black;
+      font-size 16px;
+      cursor pointer;
+      margin 0 4px;
+    }
+
+    #page-info {
+      margin 0 10px;
+    }
+    .breadcrumb-container {
+            width 100%;
+            display flex;
+            align-items left;
+            justify-content space-between;
+            padding 0 20px;
+        }
+
+        .breadcrumb {
+            font-size 14px;
+            color #555;
+        }
+
+        .breadcrumb a {
+            text-decoration none;
+            color #555;
+            margin-right 5px;
+        }
+
+        .breadcrumb ahover {
+            text-decoration underline;
+        }
+
+
+    .CatalogListContainer {
+      margin var(--catalog-margin);
+      padding 20px;
+      background-color #FFFFFF;
+      border 0.5px solid #ddd;
+    }
+      .Excel-Icon {
+  width 25px;  Adjust size as needed 
+  height 25px;
+  transition filter 0.3s ease;
+}
+.Excel-Iconhover {
+  opacity 0.7;
+}
+  style
+head
+body style=background-color#F4F4F4;
+
+h2 class=margin-class style=font-size20px;font-weight bold;Historyh2
+
+
+div class=breadcrumb-container
+            div class=breadcrumb
+                a href=#i class=material-icons style=vertical-align middle; onclick=navigateToHome()arrow_backia
+                
+            div
+        div
+
+div class=search-container
+  input type=text id=myInput onkeyup=filterTable() placeholder=Search... title=Search catalogue name, number, version..
+  i class=fa fa-searchi
+div
+
+div class=CatalogListContainer margin-class
+  h3Catalog Listh3
+
+  table id=myTable
+    thead
+      tr class=header
+      th style=width10%; onclick=sortTable(0)Statusspan class=sort-icon⇅spanth
+        th style=width10%; onclick=sortTable(1)Numberspan class=sort-icon⇅spanth
+        th style=width15%; onclick=sortTable(2)Namespan class=sort-icon⇅spanth
+        th style=width10%; onclick=sortTable(3)Itemsspan class=sort-icon⇅spanth
+        th style=width10%; onclick=sortTable(4)BUspan class=sort-icon⇅spanth
+        th style=width10%; onclick=sortTable(5)Versionspan class=sort-icon⇅spanth
+        th style=width12%; onclick=sortTable(6)Createdspan class=sort-icon⇅spanth
+        th style=width13%; onclick=sortTable(7)Updatedspan class=sort-icon⇅spanth
+        th style=width3%;th
+        
+      tr
+    thead
+    tbody
+      {% for results in requestData.results.entities %}
+      tr class=record-row data-record-id={{ results.mvh_suppliercatalogueid }}
+        
+          td{{results.mvh_cataloguploadstatus.Label}}td
+          !--tdFailed to Uploadtd--
+          td{{ results.mvh_cataloguenumber }}td
+          td{{ results.mvh_cataloguename }}td
+          td{{ results.mvh_noofitems }}td
+          td{{ results.mvh_buname }}td
+          td{{ results.mvh_lastupdatedversion }}td
+          td{{ results.createdon  date 'ddMMyyyy HHmm'}}td
+          td{{ results.modifiedon  date 'ddMMyyyy HHmm'}}td
+          !--tdi class=fas fa-file-excel style=font-size30px;colorgreen; cursor pointer; onclick=downloadAttachment('{{ results.crff0_catalogue.Url }}')itd  --
+          td
+  img src={{ snippets['MVH Excel Download Icon'] }} 
+       alt=Excel Download Icon 
+       class=Excel-Icon 
+       onclick=downloadAttachment('{{ results.crff0_catalogue.Url }}') 
+td
+        tr
+      {% endfor %}
+    tbody
+  table
+div
+
+div class=pagination margin-class
+  div class=info id=pagination-infodiv
+  div class=controls id=pagination-controls
+    button class=arrow onclick=changePage(-1)&#8592;button
+    span id=page-infospan
+    button class=arrow onclick=changePage(1)&#8594;button
+  div
+div
+script
+function navigateToHome() {
+    const url = new URL(httpssupp-catalog-mgmt.powerappsportals.com); 
+    window.location.href = url.toString();
+  }
+function downloadAttachment(url) {
+  const anchor = document.createElement('a');
+  anchor.style.display = 'none';
+  anchor.href = url;
+  anchor.setAttribute('download', '');
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+}
+
+  const rowsPerPage = 5;
+  let currentPage = 1;
+  let totalRows = 0;
+
+  function navigateToEditPage(status, number, name, items, unit, version, created, modified) {
+    const url = new URL(httpssupp-catalog-mgmt.powerappsportals.comUpload_CatalogueUpdate_Catalogue);
+    url.searchParams.append(status, status);
+    url.searchParams.append(number, number);
+    url.searchParams.append(name, name);
+    url.searchParams.append(items, items);
+    url.searchParams.append(unit, unit);
+    url.searchParams.append(version, version);
+    url.searchParams.append(created, created);
+    url.searchParams.append(modified, modified);
+
+    window.location.href = url.toString();
+  }
+
+function filterTable() {
+  const input = document.getElementById(myInput).value.toUpperCase();
+  const table = document.getElementById(myTable);
+  const rows = table.getElementsByTagName(tr);
+  let visibleRows = [];
+
+  for (let i = 1; i  rows.length; i++) {
+    let row = rows[i];
+    row.style.display = none;
+    const cells = row.getElementsByTagName(td);
+    for (let cell of cells) {
+      if (cell.textContent.toUpperCase().indexOf(input)  -1) {
+        row.style.display = ;
+        visibleRows.push(row);
+        break;
+      }
+    }
+  }
+  setupPagination(visibleRows);
+}
+
+function sortTable(n) {
+  const table = document.getElementById(myTable);
+  let rows = Array.from(table.rows).slice(1);
+  const dir = table.getAttribute('data-sort-dir') === 'asc'  'desc'  'asc';
+  table.setAttribute('data-sort-dir', dir);
+
+  rows.sort((a, b) = {
+    let x = a.getElementsByTagName(TD)[n].textContent.toLowerCase();
+    let y = b.getElementsByTagName(TD)[n].textContent.toLowerCase();
+    if (dir === 'asc') {
+      return x  y  1  -1;
+    } else {
+      return x  y  1  -1;
+    }
+  });
+
+  for (let row of rows) {
+    table.getElementsByTagName('tbody')[0].appendChild(row);
+  }
+
+  setupPagination(rows);
+}
+
+function setupPagination(rows) {
+  totalRows = rows.length;
+  const paginationInfo = document.getElementById(pagination-info);
+  const paginationControls = document.getElementById(pagination-controls);
+  paginationControls.innerHTML = `
+    button class=arrow onclick=changePage(-1)&#8592;button
+    span id=page-infospan
+    button class=arrow onclick=changePage(1)&#8594;button
+  `;
+  showPage(currentPage, rows);
+}
+
+function showPage(page, rows) {
+  currentPage = page;
+  const start = (page - 1)  rowsPerPage;
+  const end = start + rowsPerPage;
+
+  for (let i = 0; i  rows.length; i++) {
+    rows[i].style.display = i = start && i  end    none;
+  }
+
+  const paginationInfo = document.getElementById(pagination-info);
+  paginationInfo.innerText = `Total ${start + 1}-${Math.min(end, totalRows)} of ${totalRows}`;
+
+  const pageInfo = document.getElementById(page-info);
+  pageInfo.innerText = `Page ${currentPage}`;
+
+   Center the page info
+  const controls = document.querySelector(.pagination .controls);
+  const controlsWidth = controls.offsetWidth;
+  const pageInfoWidth = pageInfo.offsetWidth;
+  
+  const buttons = document.querySelectorAll(.pagination .controls .arrow);
+  buttons.forEach(button = {
+    button.style.display = inline-block;
+  });
+
+  if (currentPage === 1) {
+    buttons[0].style.display = none;  Hide the left arrow on the first page
+  }
+  if (currentPage === Math.ceil(totalRows  rowsPerPage)) {
+    buttons[1].style.display = none;  Hide the right arrow on the last page
+  }
+}
+
+function changePage(direction) {
+  const numPages = Math.ceil(totalRows  rowsPerPage);
+  if (currentPage + direction  0 && currentPage + direction = numPages) {
+    showPage(currentPage + direction, Array.from(document.getElementById(myTable).rows).slice(1));
+  }
+}
+
+document.addEventListener(DOMContentLoaded, () = {
+  const rows = Array.from(document.getElementById(myTable).rows).slice(1);
+  setupPagination(rows);
+});
+script
+
+body
+html

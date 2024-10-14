@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Catalog</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F4F4F4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            width: calc(100% - 20px);
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-container {
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .breadcrumb-container {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .breadcrumb a {
+            text-decoration: none;
+            color: #555;
+            margin-right: 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .cataloguecontainer {
+            width: calc(100% - 40px);
+            margin: 20px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 20px;
+        }
+
+        h1 strong {
+            font-weight: bold;
+        }
+
+        .content {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #fff;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .content p {
+            margin-bottom: 10px;
+            /*font-weight: bold;*/
+        }
+
+        /*.content p .label {
+    font-weight: bold;
+        }*/
+
+        .content .label {
+    font-weight: bold;
+        }
+
+        .view-history {
+            margin-left: 50px;
+            margin-top: 10px;
+        }
+
+        .view-history a {
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        .view-history a:hover {
+            text-decoration: underline;
+        }
+
+        /* Styles for upload sections */
+        .file-upload-section {
+            margin-top: 20px;
+            padding: 20px;
+            display: none; /* Hidden by default */
+        }
+
+        .file-upload-section label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .file-upload-section input[type="file"] {
+            display: block;
+            padding: 10px;
+            margin-bottom: 10px;
+            width: calc(100% - 20px);
+            border: 1px solid #ccc;
+            outline: none;
+            background-color: #f0f0f0;
+        }
+
+        .file-name {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .buttons .submit-btn {
+            background-color: #555;
+            color: #fff;
+        }
+
+        .buttons .cancel-btn {
+            background-color: #fff;//#ccc;
+            color: #333;
+            border-color: #808080;
+           border-width: thin;
+           border-style: solid
+        }
+
+        .buttons .submit-btn:hover, .buttons .cancel-btn:hover {
+            opacity: 0.8;
+        }
+
+        .status-message {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            display: none;
+        }
+        .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    text-align: center; /* Center the text */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto; /* Center the modal horizontally and vertically */
+    padding: 20px; /* Uniform padding around the content */
+    border: 1px solid #888;
+    width: 50%; /* Adjust width as needed */
+    max-width: 300px; /* Optional: Limit the maximum width */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Add shadow for better visibility */
+    position: relative; /* For z-index to work if needed */
+}
+
+#modal-message {
+    font-size: 17px;
+    color: #333;
+}
+
+
+    </style>
+</head>
+<body onload="toggleFileUploadSection()">
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <p id="modal-message"></p>
+    </div>
+</div>
+
+    <div class="main-content">
+        <div class="title-container">
+            <h1 style="padding-left: 20px;"><strong>Upload Catalog</strong></h1>
+        </div>
+        <div class="breadcrumb-container">
+  <div class="breadcrumb">
+    <a href="#" id="backLink"><i class="material-icons" style="vertical-align: middle;">arrow_back</i></a>
+    <span>Upload Catalog</span> &gt;
+    <span id="breadcrumb-name">Catalogue Name</span>
+    <!--<span><b>Update Catalogue</b></span>-->
+  </div>
+</div>
+
+        <div class="cataloguecontainer">
+            <div class="content">
+                <!--<p><span class="label">Business Unit: </span> <span id="businessUnit"></span></p>
+                <p><span class="label">Catalogue Number: </span> <span id="catalogueNumber"></span></p>
+                <p><span class="label">Catalogue Name: </span> <span id="catalogueName"></span></p>
+                <p><span class="label">Last Updated Version: </span> <span id="lastUpdatedVersion"></span></p>
+                <p><span class="label">Created On: </span> <span id="createdOn"></span></p>
+                <div class="view-history">
+                    <a href="#">View History</a>
+                </div>-->
+
+              <table style="border-collapse: collapse; background-color: transparent; width: 100%;">
+    <colgroup>
+        <col style="width: 20%;">
+        <col style="width: 80%;">
+    </colgroup>
+    <tr>
+        <td class="label" style="padding: 5px;">Business Unit :</td>
+        <td id="businessUnit" style="padding: 5px;"></td>
+    </tr>
+    <tr>
+        <td class="label" style="padding: 5px;">Catalog Number :</td>
+        <td id="catalogueNumber" style="padding: 5px;"></td>
+    </tr>
+    <tr>
+        <td class="label" style="padding: 5px;">Catalog Name :</td>
+        <td id="catalogueName" style="padding: 5px;"></td>
+    </tr>
+    <tr>
+        <td class="label" style="padding: 5px;">Last Updated Version :</td>
+        <td id="lastUpdatedVersion" style="padding: 5px;"></td>
+    </tr>
+    <tr>
+        <td class="label" style="padding: 5px;">Created On :</td>
+        <td id="createdOn" style="padding: 5px;"></td>
+    </tr>
+     <!--<tr>
+        <td class="label" style="padding: 5px;"></td>
+        <td id="viewHistory" class="view-history" style="padding: 5px;"><a href="https://supp-catalog-mgmt.powerappsportals.com/Catalogue_History/">View History</a></td>
+    </tr>-->
+
+    <!--<tr>
+        <td colspan="2" style="padding: 5px;">
+            <div class="view-history" style="text-align: left;">
+                <a href="#">View History</a>
+            </div>
+        </td>
+    </tr>
+    <tr>
+    <td colspan="2" style="padding: 5px;">
+      <div class="view-history" style="text-align: left;"><a href="#">View History</a>  </div>
+    </td>-->
+  </tr>
+</table>
+            </div>
+<div class="Image-upload-section">
+        <label>Do you want to upload a ZIP file?</label>
+        <input type="radio" id="uploadYes" name="uploadFile" value="yes" onclick="toggleFileUploadSection()"> Yes
+        <input type="radio" id="uploadNo" name="uploadFile" value="no" onclick="toggleFileUploadSection()" checked> No
+    </div>
+<!-- ZIP File Upload Section -->
+    <div class="file-upload-section" id="zipUploadSection">
+        <label for="zip-file-upload">Upload ZIP File *</label>
+        <input type="file" id="zip-file-upload" accept=".zip">
+        <p class="file-name" id="zip-file-name">No ZIP file chosen</p>
+        <div class="buttons">
+                    <button class="cancel-btn" onclick="handleCancel()">Cancel</button>
+                    <button class="submit-btn" onclick="handleSubmit()">Submit</button>
+                </div>
+    </div>
+            <div class="file-upload-section" id="fileUploadSection">
+                <label for="file-upload">Upload File *(.csv, .xlsx file Only)</label>
+                <input type="file" id="file-upload" accept=".csv, .xlsx">
+                <p id="file-name">No file chosen</p>
+                <div class="buttons">
+                    <button class="cancel-btn" onclick="handleCancel()">Cancel</button>
+                    <button class="submit-btn" onclick="handleSubmit()">Submit</button>
+                </div>
+            </div>
+            <div class="status-message" id="statusMessage"> 
+                Uploading your File... Please wait while we process your file. 
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+// Function to show/hide the file upload sections based on user selection
+        function toggleFileUploadSection() {
+            var zipUploadSection = document.getElementById('zipUploadSection');
+            var fileUploadSection = document.getElementById('fileUploadSection');
+
+            if (document.getElementById('uploadYes').checked) {
+                zipUploadSection.style.display = 'block';  // Show ZIP section
+                fileUploadSection.style.display = 'none'; // Show CSV/XLSX section
+            } else {
+                zipUploadSection.style.display = 'none';   // Hide ZIP section
+                fileUploadSection.style.display = 'block'; // Show only CSV/XLSX section
+                document.getElementById('zip-file-upload').value = ''; // Reset ZIP file input
+                document.getElementById('zip-file-name').textContent = 'No ZIP file chosen'; // Reset ZIP file name display
+            }
+          
+        }
+// ZIP file upload handling
+        document.getElementById('zip-file-upload').addEventListener('change', function() {
+            var file = this.files[0];
+            var fileName = file ? file.name : 'No ZIP file chosen';
+            document.getElementById('zip-file-name').textContent = fileName;
+
+            // Check if the file is a ZIP file
+            if (file && (file.type !== 'application/zip' && !file.name.endsWith('.zip'))) {
+                alert('Please upload a ZIP file only.');
+                document.getElementById('zip-file-name').textContent = 'No ZIP file chosen';
+                this.value = ''; // Clear the file input
+                return;
+            }
+
+            // Check file size (e.g., 10MB max)
+            var maxSizeInBytes = 10 * 1024 * 1024; // 10 MB in bytes
+            if (file.size > maxSizeInBytes) {
+                alert('Maximum ZIP file size allowed is 10 MB.');
+                document.getElementById('zip-file-name').textContent = 'No ZIP file chosen';
+                this.value = ''; // Clear the file input
+                return;
+            }
+        });
+
+        function getQueryParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('backLink').addEventListener('click', function(event) {
+                event.preventDefault();
+                window.location.href = 'https://supp-catalog-mgmt.powerappsportals.com/';
+            });
+             
+            //document.getElementById("No.ofItems").textContent = getQueryParameter("items");
+            document.getElementById("businessUnit").textContent = getQueryParameter("unit");
+            document.getElementById("catalogueNumber").textContent = getQueryParameter("number");
+            document.getElementById("catalogueName").textContent = getQueryParameter("name");
+            document.getElementById("lastUpdatedVersion").textContent = getQueryParameter("version");
+            document.getElementById("createdOn").textContent = new Date(getQueryParameter("created")).toLocaleDateString();
+            document.getElementById("breadcrumb-name").textContent = getQueryParameter("name");
+            document.getElementById("BaselineCatalogueGUID").textContent = getQueryParameter("BaselineCatalogueGUID");
+            document.getElementById("SupplierEmail").textContent = getQueryParameter("SupplierEmail");
+            document.getElementById("SupplierAccountName").textContent = getQueryParameter("SupplierAccountName");
+        });
+
+        document.getElementById('file-upload').addEventListener('change', function() {
+            var file = this.files[0];
+            var fileName = file ? file.name : 'No file chosen';
+            //var submitButton = document.querySelector('.submit-btn');
+            document.getElementById('file-name').textContent = fileName;
+
+            // Check file extension
+            if (!fileName.toLowerCase().endsWith('.csv') && !fileName.toLowerCase().endsWith('.xlsx')) {
+                alert('Please upload a CSV or Excel catalog only.');
+                document.getElementById('file-name').textContent = 'No file chosen';
+                this.value = ''; // Clear the file input
+              //submitButton.disabled = true;
+                return;
+            }
+
+            // Check file size
+            var maxSizeInBytes = 10 * 1024 * 1024; // 10 MB in bytes
+            if (file.size > maxSizeInBytes) {
+                alert('Maximum catalog size allowed is 10 MB.');
+                document.getElementById('file-name').textContent = 'No file chosen';
+              this.value = ''; // Clear the file input
+            //  submitButton.disabled = true;
+                return;
+            }
+
+            if (fileName.toLowerCase().endsWith('.csv')) {
+                handleCSVFile(file);
+            } else if (fileName.toLowerCase().endsWith('.xlsx')) {
+                handleXLSXFile(file);
+            }
+        });
+
+        function handleCSVFile(file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var contents = e.target.result;
+                processCSV(contents);
+            };
+            reader.onerror = function() {
+                alert('Unable to read the catalog.');
+            };
+            reader.readAsText(file);
+        }
+
+        function handleXLSXFile(file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var data = new Uint8Array(e.target.result);
+                var workbook = XLSX.read(data, { type: 'array' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+                var csv = XLSX.utils.sheet_to_csv(worksheet);
+                processCSV(csv);
+            };
+            reader.onerror = function() {
+                alert('Unable to read the Catalog.');
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        
+        function handleZIPFile(file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                JSZip.loadAsync(e.target.result).then(function(zip) {
+                    // Process each file in the ZIP archive
+                    var files = Object.values(zip.files);
+                    files.forEach(function(zipFile) {
+                        if (!zipFile.dir) {
+                            zipFile.async('blob').then(function(blob) {
+                                var fileName = zipFile.name;
+                                if (fileName.toLowerCase().endsWith('.csv')) {
+                                    handleCSVFile(blob);
+                                } else if (fileName.toLowerCase().endsWith('.xlsx')) {
+                                    handleXLSXFile(blob);
+                                } else {
+                                    alert('Unsupported file type inside ZIP: ' + fileName);
+                                }
+                            });
+                        }
+                    });
+                }, function(err) {
+                    alert('Unable to read the ZIP file.');
+                });
+            };
+            reader.onerror = function() {
+                alert('Unable to read the ZIP file.');
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function processCSV(contents) {
+            if (contents.trim() === '') {
+                alert('The catalog is empty. Please upload a catalog with at least one header and one row.');
+                document.getElementById('file-name').textContent = 'No file chosen';
+                this.value = ''; // Clear the file input
+              submitButton.disabled = true;
+                return;
+            }
+            var lines = contents.split('\n');
+            var rowCount = lines.length;
+
+            // Check if the last line is empty (sometimes an extra new line adds an empty row)
+            if (lines[rowCount - 1].trim() === '') {
+                rowCount -= 1;
+            }
+
+            if (rowCount < 2) {
+               // document.getElementById('file-name').textContent = 'No file chosen';
+               // this.value = ''; // Clear the file input
+              //submitButton.disabled = true;
+                alert('The catalog has less than 2 rows. Please upload a catalog with at least one header and one row.');
+                return;
+            }
+
+            //alert('The catalog is valid');
+            showModal('The uploaded catalog is valid');
+            //submitButton.disabled = false;
+        }
+function showModal(message) {
+    var modal = document.getElementById('modal');
+    var modalMessage = document.getElementById('modal-message');
+    
+    modalMessage.textContent = message;
+    modal.style.display = 'block';
+
+    setTimeout(function() {
+        modal.style.display = 'none';
+    }, 3000); // Hide after 3 seconds
+}
+        var _uploadImageFlowURL = "https://supp-catalog-mgmt.powerappsportals.com/_api/cloudflow/v1.0/trigger/7e548ca5-e256-ef11-a317-7c1e521a60a6";
+
+        function UploadFileToBlob(inputFile) {
+    var reader = new FileReader();
+    // Read the file as an ArrayBuffer for binary content
+    reader.readAsArrayBuffer(inputFile);
+ 
+    reader.onload = function () {
+        document.getElementById("statusMessage").style.display = "block";
+        var file = {};
+        file.name = inputFile.name;
+ 
+        // Convert ArrayBuffer to Base64
+        var binary = '';
+        var bytes = new Uint8Array(reader.result);
+        var len = bytes.byteLength;
+        for (var i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        file.contentBytes = btoa(binary); // Base64 encode the binary data
+    
+
+ 
+        var data = {};
+        
+        data["File Name"] = inputFile.name;
+        data["File Content"] = file;
+        data["BU"] = getQueryParameter("unit");
+        data["CatalogName"] = getQueryParameter("name");
+        data["CatalogNumber"] = getQueryParameter("number");
+        data["LastUpdatedVersion"] = getQueryParameter("version");
+        data["No.ofItems"] = getQueryParameter("items");
+        data["SupplierEmail"] = getQueryParameter("SupplierEmail");
+        data["SupplierAccountName"] = getQueryParameter("SupplierAccountName");
+        data["BaselineCatalogueGUID"] = getQueryParameter("BaselineCatalogueGUID");
+
+        var payload = {};
+        payload.eventData = JSON.stringify(data);
+        alert(JSON.stringify(data));
+        
+ 
+        // Send the payload via AJAX
+        shell.ajaxSafePost({
+            type: "POST",
+            contentType: "application/json",
+            url: _uploadImageFlowURL,
+            data: JSON.stringify(payload),
+            processData: false,
+            global: false,
+            success: function (response) {
+                console.log('Success:', response);
+                document.getElementById("statusMessage").style.display = "none";
+                alert('The Catalog has been uploaded successfully!');
+                document.getElementById('file-upload').value = '';
+                document.getElementById('file-name').textContent = 'No file chosen';
+                window.location.href = 'https://supp-catalog-mgmt.powerappsportals.com/';
+            },
+            error: function (error) {
+                console.error('Error:', error);
+                document.getElementById("statusMessage").style.display = "none";
+                alert('Catalog upload failed. Please try again.');
+            }
+        });
+    };
+ 
+    reader.onerror = function (error) {
+        console.error('Error: ', error);
+    };
+}
+
+        function handleSubmit() {
+            var selectedFile;
+            var selectedFileType = document.querySelector('input[name="uploadFile"]:checked').value;
+
+            switch (selectedFileType) {
+                case 'yes':
+                    selectedFile = document.getElementById('zip-file-upload').files[0];
+                    if (selectedFile) {
+                        UploadFileToBlob(selectedFile);
+                    } else {
+                        alert("Please select a ZIP file before submitting.");
+                    }
+                    break;
+                case 'no':
+                    selectedFile = document.getElementById('file-upload').files[0];
+                    if (selectedFile) {
+                        UploadFileToBlob(selectedFile);
+                    } else {
+                        alert("Please select a Catalog before submitting.");
+                    }
+                    break;
+            }
+        }
+
+        function handleCancel() {
+            var selectedFileType = document.querySelector('input[name="uploadFile"]:checked').value;
+
+            switch (selectedFileType) {
+                case 'yes':
+                    document.getElementById('zip-file-upload').value = ''; // Reset ZIP file input
+                    document.getElementById('zip-file-name').textContent = 'No ZIP file chosen'; // Reset ZIP file name display
+                    break;
+                case 'no':
+                    document.getElementById('file-upload').value = ''; // Reset CSV/XLSX file input
+                    document.getElementById('file-name').textContent = 'No file chosen'; // Reset file name display
+                    break;
+            }
+
+            alert('Upload canceled.');
+            window.location.href = 'https://supp-catalog-mgmt.powerappsportals.com/';
+        }
+
+           function navigateToHistory() {
+    const url = new URL("https://supp-catalog-mgmt.powerappsportals.com/Catalogue_History/"); 
+    window.location.href = url.toString();
+  }
+    </script>
+</body>
+</html>

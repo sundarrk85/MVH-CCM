@@ -1,0 +1,436 @@
+{% fetchxml requestData %}
+<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false">
+  <entity name="mvh_baselinecatalogitems">
+    <attribute name="mvh_baselinecatalogitemsid" />
+    <attribute name="mvh_name" />
+    <attribute name="createdon" />
+    <attribute name="mvh_purchasable" />
+    <attribute name="mvh_price" />
+    <attribute name="mvh_description" />
+    <attribute name="mvh_contractnumber" />
+    <attribute name="mvh_active" />
+    <attribute name="mvh_vhitemnumber" />
+    <attribute name="mvh_usepackweight" />
+    <attribute name="mvh_uommultiplier" />
+    <attribute name="mvh_uomcode" />
+    <attribute name="mvh_unspsccode" />
+    <attribute name="mvh_tags" />
+    <attribute name="mvh_sustainabilityurl" />
+    <attribute name="mvh_sustainability" />
+    <attribute name="mvh_supplierpartnum" />
+    <attribute name="mvh_suppliernumber" />
+    <attribute name="mvh_supplieritemndc" />
+    <attribute name="mvh_supplieritemmanufacturerpartnumber" />
+    <attribute name="mvh_supplieritemmanufacturername" />
+    <attribute name="mvh_supplieritemlistprice" />
+    <attribute name="mvh_supplieriteml3commodity" />
+    <attribute name="mvh_supplieriteml2commodity" />
+    <attribute name="mvh_supplieriteml1commodity" />
+    <attribute name="mvh_supplierauxpartnum" />
+    <attribute name="mvh_supplier" />
+    <attribute name="mvh_storageuom" />
+    <attribute name="mvh_storagequantity" />
+    <attribute name="statuscode" />
+    <attribute name="statecode" />
+    <attribute name="mvh_savings" />
+    <attribute name="mvh_rfqquestionnaire" />
+    <attribute name="mvh_requirerfid" />
+    <attribute name="mvh_requireinspection" />
+    <attribute name="mvh_requirebarcode" />
+    <attribute name="mvh_requireassettag" />
+    <attribute name="overriddencreatedon" />
+    <attribute name="mvh_receivingquestionnaire" />
+    <attribute name="mvh_receivecatchweight" />
+    <attribute name="mvh_rebate" />
+    <attribute name="mvh_purchasingquestionnaire" />
+    <attribute name="mvh_pricingtype" />
+    <attribute name="mvh_pricetier9" />
+    <attribute name="mvh_pricetier8" />
+    <attribute name="mvh_pricetier7" />
+    <attribute name="mvh_pricetier6" />
+    <attribute name="mvh_pricetier5" />
+    <attribute name="mvh_pricetier4" />
+    <attribute name="mvh_pricetier3" />
+    <attribute name="mvh_pricetier20" />
+    <attribute name="mvh_pricetier2" />
+    <attribute name="mvh_pricetier19" />
+    <attribute name="mvh_pricetier18" />
+    <attribute name="mvh_pricetier17" />
+    <attribute name="mvh_pricetier16" />
+    <attribute name="mvh_pricetier15" />
+    <attribute name="mvh_pricetier14" />
+    <attribute name="mvh_pricetier13" />
+    <attribute name="mvh_pricetier12" />
+    <attribute name="mvh_pricetier11" />
+    <attribute name="mvh_pricetier10" />
+    <attribute name="mvh_pricetier1" />
+    <attribute name="mvh_preferred" />
+    <attribute name="mvh_packweightuom" />
+    <attribute name="mvh_packweight" />
+    <attribute name="mvh_packquantity" />
+    <attribute name="owningbusinessunit" />
+    <attribute name="ownerid" />
+    <attribute name="mvh_orderincrement" />
+    <attribute name="mvh_ndc" />
+    <attribute name="modifiedon" />
+    <attribute name="modifiedonbehalfby" />
+    <attribute name="modifiedby" />
+    <attribute name="mvh_minimumorderquantity" />
+    <attribute name="mvh_manufacturerpartnumber" />
+    <attribute name="mvh_manufacturernumber" />
+    <attribute name="mvh_manufacturername" />
+    <attribute name="mvh_manufacturer" />
+    <attribute name="mvh_link5url" />
+    <attribute name="mvh_link5title" />
+    <attribute name="mvh_link4url" />
+    <attribute name="mvh_link4title" />
+    <attribute name="mvh_link3url" />
+    <attribute name="mvh_link3title" />
+    <attribute name="mvh_link2url" />
+    <attribute name="mvh_link2title" />
+    <attribute name="mvh_link1url" />
+    <attribute name="mvh_link1title" />
+    <attribute name="mvh_link0url" />
+    <attribute name="mvh_link0title" />
+    <attribute name="mvh_leadtime" />
+    <attribute name="mvh_itemnumber" />
+    <attribute name="mvh_itemclassification" />
+    <attribute name="mvh_itemaccessories" />
+    <attribute name="mvh_inventorylottrackingenabled" />
+    <attribute name="mvh_inventorylotexpirationtype" />
+    <attribute name="mvh_internaluom" />
+    <attribute name="mvh_imageurl" />
+    <attribute name="mvh_imagefilename" />
+    <attribute name="mvh_image5url" />
+    <attribute name="mvh_image4url" />
+    <attribute name="mvh_image3url" />
+    <attribute name="mvh_image2url" />
+    <attribute name="mvh_image1url" />
+    <attribute name="mvh_image0url" />
+    <attribute name="mvh_currency" />
+    <attribute name="createdonbehalfby" />
+    <attribute name="createdby" />
+    <attribute name="mvh_coupasupplierinternalnumber" />
+    <attribute name="mvh_coupainternalnumber" />
+    <attribute name="mvh_contractterm" />
+    <attribute name="mvh_consumptionuom" />
+    <attribute name="mvh_consumptionquantity" />
+    <attribute name="mvh_commodity" />
+    <attribute name="mvh_catalog" />
+    <attribute name="mvh_availabilitydate" />
+    <attribute name="mvh_availability" />
+    <attribute name="mvh_alternativesuppliernumber" />
+    <attribute name="mvh_allowpartialqty" />
+    <order attribute="mvh_name" descending="false" />
+  </entity>
+</fetch>
+{% endfetchxml %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --catalog-margin: 25px;
+    }
+
+    .margin-class {
+      margin: var(--catalog-margin);
+    }
+
+    .breadcrumb-container {
+      width: 100%;
+      display: flex;
+      align-items: left;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+
+    .breadcrumb {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .breadcrumb a {
+      text-decoration: none;
+      color: #555;
+      margin-right: 5px;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    .cataloguecontainer {
+      width: calc(100% - 40px);
+      margin: 20px;
+      background-color: #fff;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    #myTable {
+      border-spacing: 0px;
+      width: 100%;
+      border: 0px solid #ddd;
+    }
+
+    #myTable th {
+      text-align: left;
+      padding: 12px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    #myTable th .sort-icon {
+      margin-left: 5px;
+      color: #A4A4A4;
+    }
+
+    #myTable th:hover .sort-icon, 
+    #myTable th:active .sort-icon {
+      color: black;
+    }
+
+    #myTable td {
+      text-align: left;
+      padding: 12px;
+    }
+
+    #myTable tr {
+      border-bottom: 1px solid #ddd;
+    }
+
+    #myTable tbody tr:nth-child(odd) {
+      background-color: #f2f2f2;
+    }
+
+    #myTable tr.header, #myTable tr:hover {
+      cursor: pointer;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      margin-top: 10px;
+      background-color: #fff;
+      border: 0.5px solid #ddd;
+    }
+
+    .pagination .info {
+      display: flex;
+      align-items: center;
+    }
+
+    .pagination .controls {
+      display: flex;
+      align-items: center;
+    }
+
+    .pagination .controls .arrow {
+      background-color: transparent;
+      border: none;
+      color: black;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 0 4px;
+    }
+
+    .CatalogListContainer {
+      margin: var(--catalog-margin);
+      padding: 20px;
+      background-color: #FFFFFF;
+      border: 0.5px solid #ddd;
+    }
+
+    .main-content {
+      width: calc(100% - 20px);
+      margin: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+</head>
+
+<body style="background-color:#F4F4F4;">
+
+<h2 class="margin-class" style="font-size:20px;"><span id="catelog-name">BP_MWI_Hospice<span> (Version-<span id="catalog-version">1.0</span>)</h2>
+<div class="main-content">
+  <div class="breadcrumb-container">
+    <div class="breadcrumb">
+      <a href="#" id="backLink"><i class="material-icons" style="vertical-align: middle;">arrow_back</i></a>
+      <a href="#">Upload Catalogue</a> &gt; <pre> </pre>
+      <span id="catelog-name">BP_MWI_Hospice</span>
+    </div>
+  </div>
+
+  <div class="CatalogListContainer margin-class">
+    <h3>Item List</h3>
+
+    <table id="myTable">
+      <thead>
+        <tr class="header">
+          <th style="width:10%;" onclick="sortTable(0)">Item Name<span class="sort-icon">⇅</span></th>
+          <th style="width:10%;" onclick="sortTable(1)">Description<span class="sort-icon">⇅</span></th>
+          <th style="width:15%;" onclick="sortTable(2)">Price<span class="sort-icon">⇅</span></th>
+          <th style="width:10%;" onclick="sortTable(3)">Purchasable<span class="sort-icon">⇅</span></th>
+          <th style="width:10%;" onclick="sortTable(4)">Active<span class="sort-icon">⇅</span></th>
+          <th style="width:10%;" onclick="sortTable(5)">Contract Number<span class="sort-icon">⇅</span></th>
+          <th style="width:15%;" onclick="sortTable(6)">VH Item Number<span class="sort-icon">⇅</span></th>
+        </tr>
+      </thead>
+      <tbody>
+       {% for results in requestData.results.entities %}
+          <tr class="record-row" data-record-id="{{ mvh_baselinecatalogitemsid }}">
+            <td>{{ results.mvh_name }}</td>
+            <td>{{ results.mvh_description }}</td>
+            <td>{{ results.mvh_price }}</td>
+            <td>{{ results.mvh_purchasable }}</td>
+            <td>{{ results.mvh_active }}</td>
+            <td>{{ results.mvh_contractnumber }}</td>
+            <td>{{ results.mvh_vhitemnumber }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination margin-class">
+    <div class="info" id="pagination-info"></div>
+    <div class="controls" id="pagination-controls">
+      <button class="arrow" onclick="changePage(-1)">&#8592;</button>
+      <span id="page-info"></span>
+      <button class="arrow" onclick="changePage(1)">&#8594;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const rowsPerPage = 5;
+let currentPage = 1;
+let totalRows = 0;
+
+function filterTable() {
+  const input = document.getElementById("myInput").value.toUpperCase();
+  const table = document.getElementById("myTable");
+  const rows = table.getElementsByTagName("tr");
+  let visibleRows = [];
+
+  for (let i = 1; i < rows.length; i++) {
+    let row = rows[i];
+    row.style.display = "none";
+    const cells = row.getElementsByTagName("td");
+    for (let cell of cells) {
+      if (cell.textContent.toUpperCase().indexOf(input) > -1) {
+        row.style.display = "";
+        visibleRows.push(row);
+        break;
+      }
+    }
+  }
+  setupPagination(visibleRows);
+}
+
+function sortTable(n) {
+  const table = document.getElementById("myTable");
+  let rows = Array.from(table.rows).slice(1);
+  const dir = table.getAttribute('data-sort-dir') === 'asc' ? 'desc' : 'asc';
+  table.setAttribute('data-sort-dir', dir);
+
+  rows.sort((a, b) => {
+    let x = a.getElementsByTagName("TD")[n].textContent.toLowerCase();
+    let y = b.getElementsByTagName("TD")[n].textContent.toLowerCase();
+    if (dir === 'asc') {
+      return x > y ? 1 : -1;
+    } else {
+      return x < y ? 1 : -1;
+    }
+  });
+
+  for (let row of rows) {
+    table.getElementsByTagName('tbody')[0].appendChild(row);
+  }
+
+  setupPagination(rows);
+}
+
+function setupPagination(rows) {
+  totalRows = rows.length;
+  const paginationInfo = document.getElementById("pagination-info");
+  const paginationControls = document.getElementById("pagination-controls");
+  paginationControls.innerHTML = `
+    <button class="arrow" onclick="changePage(-1)">&#8592;</button>
+    <span id="page-info"></span>
+    <button class="arrow" onclick="changePage(1)">&#8594;</button>
+  `;
+  showPage(currentPage, rows);
+}
+
+function showPage(page, rows) {
+  currentPage = page;
+  const start = (page - 1) * rowsPerPage;
+  const end = start + rowsPerPage;
+
+  for (let i = 0; i < rows.length; i++) {
+    rows[i].style.display = i >= start && i < end ? "" : "none";
+  }
+
+  const paginationInfo = document.getElementById("pagination-info");
+  paginationInfo.innerText = `Total: ${start + 1}-${Math.min(end, totalRows)} of ${totalRows}`;
+
+  const pageInfo = document.getElementById("page-info");
+  pageInfo.innerText = `Page ${currentPage}`;
+
+  const buttons = document.querySelectorAll(".pagination .controls .arrow");
+  buttons.forEach(button => {
+    button.style.display = "inline-block";
+  });
+
+  if (currentPage === 1) {
+    buttons[0].style.display = "none"; // Hide the left arrow on the first page
+  }
+  if (currentPage === Math.ceil(totalRows / rowsPerPage)) {
+    buttons[1].style.display = "none"; // Hide the right arrow on the last page
+  }
+}
+
+function changePage(direction) {
+  const numPages = Math.ceil(totalRows / rowsPerPage);
+  if (currentPage + direction > 0 && currentPage + direction <= numPages) {
+    showPage(currentPage + direction, Array.from(document.getElementById("myTable").rows).slice(1));
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const rows = Array.from(document.getElementById("myTable").rows).slice(1);
+  setupPagination(rows);
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('backLink').addEventListener('click', function(event) {
+                event.preventDefault();
+                window.location.href = 'https://supp-catalog-mgmt.powerappsportals.com/';
+            });
+
+            /*document.getElementById("businessUnit").textContent = getQueryParameter("unit");
+            document.getElementById("catalogueNumber").textContent = getQueryParameter("number");
+            document.getElementById("catalogueName").textContent = getQueryParameter("name");
+            document.getElementById("createdOn").textContent = new Date(getQueryParameter("created")).toLocaleDateString();
+            document.getElementById("RowID").textContent = getQueryParameter("supplierCatalogueId");*/
+            document.getElementById("catalog-name").textContent = getQueryParameter("name");
+            document.getElementById("catalog-version").textContent = getQueryParameter("version");
+            
+        });
+</script>
+
+</body>
+</html>

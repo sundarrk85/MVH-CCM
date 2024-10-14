@@ -1,0 +1,420 @@
+{% assign UploadZipFlowURL = settings["SCM/CloudFlowURL/Supplier - Upload zip file from UI to Blob"] %}
+{% assign UploadCatalogFlowURL = settings["SCM/CloudFlowURL/Supplier - Upload catalog into Dataverse and Blob"] %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Catalog</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body onload="PageOnStart()">
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <p id="modal-message"></p>
+        </div>
+    </div>
+
+    <h1 class="margin-class">Upload Catalog</h1>
+    <div class="main-content">
+        <div class="breadcrumb-container">
+            <div class="breadcrumb">
+                <a href="/" id="backLink"><i class="material-icons" style="vertical-align: middle;">arrow_back</i></a>
+                <span id="breadcrumb-name">Catalogue Name</span>
+            </div>
+        </div>
+        <div class="cataloguecontainer content">
+            <div class="row">
+                <div class="content col">
+                    <table class="table">
+                        <colgroup>
+                            <col style="width: 30%;">
+                            <col style="width: 70%;">
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <td class="label" style="padding: 5px;">Business Unit :</td>
+                                <td id="businessUnit" style="padding: 5px;"></td>
+                            </tr>
+                            <tr>
+                                <td class="label" style="padding: 5px;">Catalog Number :</td>
+                                <td id="catalogueNumber" style="padding: 5px;"></td>
+                            </tr>
+                            <tr>
+                                <td class="label" style="padding: 5px;">Catalog Name :</td>
+                                <td id="catalogueName" style="padding: 5px;"></td>
+                            </tr>
+                            <tr>
+                                <td class="label" style="padding: 5px;">Last Version :</td>
+                                <td id="lastUpdatedVersion" style="padding: 5px;"></td>
+                            </tr>
+                            <tr>
+                                <td class="label" style="padding: 5px;">Created On :</td>
+                                <td id="createdOn" style="padding: 5px;"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="upload_section content col">
+                    <h3>Choose the File Type</h3>
+                    <div class="Image-upload-section">
+                        <div class="input-group">
+                            <div class="input-group-text">
+                                <input type="radio" class="btn-check" id="uploadNo" name="uploadFile" value="no"
+                                    onclick="toggleFileUploadSection()" checked />
+                                <label class="btn btn-default" for="uploadNo">Upload CSV or XLSX file</label>
+                            </div>
+                            <div class="input-group-text">
+                                <input type="radio" class="btn-check" id="uploadYes" name="uploadFile" value="yes"
+                                    onclick="toggleFileUploadSection()" />
+                                <label class="btn btn-default" for="uploadYes">Upload ZIP file</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="file-upload-section" id="zipUploadSection">
+                        <input type="file" id="zip-file-upload" accept=".zip">
+                        <div class="buttons">
+                            <button class="btn cancel-btn" onclick="handleCancel()">Cancel</button>
+                            <button class="btn submit-btn" onclick="handleSubmit(this)">Submit</button>
+                        </div>
+                        <p>Please upload a valid .zip file containing a folder with zipped images and a valid .csv or
+                            .xlsx file</p>
+                    </div>
+                    <div class="file-upload-section" id="fileUploadSection">
+                        <input type="file" id="file-upload" accept=".csv, .xlsx">
+                        <!-- <p id="file-name"></p> -->
+                        <div class="buttons">
+                            <button class="btn cancel-btn" onclick="handleCancel()">Cancel</button>
+                            <button class="btn submit-btn" onclick="handleSubmit(this)">Submit</button>
+                        </div>
+                        <p>Please upload only a valid .csv or .xlsx file</p>
+                    </div>
+                    <div class="status-message" id="statusMessage">
+                        We are uploading your file.<br/>Please do not refresh or exit the page until you receive a success or failure message.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+        // Function to show/hide the file upload sections based on user selection
+        function toggleFileUploadSection() {
+            var zipUploadSection = document.getElementById('zipUploadSection');
+            var fileUploadSection = document.getElementById('fileUploadSection');
+
+            if (document.getElementById('uploadYes').checked) {
+                zipUploadSection.style.display = 'block';  // Show ZIP section
+                fileUploadSection.style.display = 'none'; // Show CSV/XLSX section
+                document.getElementById('file-upload').value = ''; // Reset CSV/XLSX file input
+                document.getElementById('file-name').textContent = ''; // Reset file name display
+
+            } else {
+                zipUploadSection.style.display = 'none';   // Hide ZIP section
+                fileUploadSection.style.display = 'block'; // Show only CSV/XLSX section
+                document.getElementById('zip-file-upload').value = ''; // Reset ZIP file input
+                document.getElementById('zip-file-name').textContent = 'No ZIP file chosen'; // Reset ZIP file name display
+            }
+
+        }
+        function PageOnStart() {
+            // Initially hide both sections
+            var zipUploadSection = document.getElementById('zipUploadSection');
+            var fileUploadSection = document.getElementById('fileUploadSection');
+
+            zipUploadSection.style.display = 'none';
+            fileUploadSection.style.display = 'none';
+
+            // Set default display based on radio button
+            if (document.getElementById('uploadYes').checked) {
+                zipUploadSection.style.display = 'block';
+            } else {
+                fileUploadSection.style.display = 'block';
+            }
+        }
+
+        function getQueryParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            document.getElementById("businessUnit").textContent = getQueryParameter("unit");
+            document.getElementById("catalogueNumber").textContent = getQueryParameter("number");
+            document.getElementById("catalogueName").textContent = getQueryParameter("name");
+            document.getElementById("lastUpdatedVersion").textContent = getQueryParameter("version");
+            document.getElementById("createdOn").textContent = new Date(getQueryParameter("created")).toLocaleDateString();
+            document.getElementById("breadcrumb-name").textContent = getQueryParameter("name");
+            document.getElementById("BaselineCatalogueGUID").textContent = getQueryParameter("BaselineCatalogueGUID");
+            document.getElementById("SupplierEmail").textContent = getQueryParameter("SupplierEmail");
+            document.getElementById("SupplierAccountName").textContent = getQueryParameter("SupplierAccountName");
+        });
+
+        document.getElementById('file-upload').addEventListener('change', function () {
+
+            var file = this.files[0];
+
+            var fileName = file ? file.name : '';
+            document.getElementById('file-name').textContent = '';
+            // Check file extension
+            if (!fileName.toLowerCase().endsWith('.csv') && !fileName.toLowerCase().endsWith('.xlsx')) {
+                alert('Please upload a CSV or Excel catalog only.');
+                document.getElementById('file-name').textContent = '';
+                this.value = ''; // Clear the file input
+                //submitButton.disabled = true;
+                return;
+            }
+
+            // Check file size
+            var maxSizeInBytes = 10 * 1024 * 1024; // 10 MB in bytes
+            if (file.size > maxSizeInBytes) {
+                alert('Maximum catalog size allowed is 10 MB.');
+                document.getElementById('file-name').textContent = '';
+                this.value = ''; // Clear the file input
+                //  submitButton.disabled = true;
+                return;
+            }
+
+            if (fileName.toLowerCase().endsWith('.csv')) {
+                handleCSVFile(file);
+            } else if (fileName.toLowerCase().endsWith('.xlsx')) {
+                handleXLSXFile(file);
+            }
+        });
+
+        function handleCSVFile(file) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var contents = e.target.result;
+                processCSV(contents);
+            };
+            reader.onerror = function () {
+                alert('We are unable to read your catalog, please make sure you are uploading valid catalog.');
+            };
+            reader.readAsText(file);
+        }
+
+        function handleXLSXFile(file) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var data = new Uint8Array(e.target.result);
+                var workbook = XLSX.read(data, { type: 'array' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+                var csv = XLSX.utils.sheet_to_csv(worksheet);
+                processCSV(csv);
+            };
+            reader.onerror = function () {
+                alert('We are unable to read your catalog, please make sure you are uploading valid catalog.');
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function processCSV(contents) {
+            if (contents.trim() === '') {
+                alert('You have uploaded empty catalog. Please make sure you upload a catalog with at least one header and one row.');
+                document.getElementById('file-name').textContent = '';
+                this.value = ''; // Clear the file input
+                submitButton.disabled = true;
+                return;
+            }
+            var lines = contents.split('\n');
+            var rowCount = lines.length;
+
+            // Check if the last line is empty (sometimes an extra new line adds an empty row)
+            if (lines[rowCount - 1].trim() === '') {
+                rowCount -= 1;
+            }
+
+            if (rowCount < 2) {
+                document.getElementById('file-name').textContent = '';
+                this.value = ''; // Clear the file input
+                //submitButton.disabled = true;
+                alert('The catalog has less than 2 rows. Please make sure you upload a catalog with at least one header and one row.');
+                return;
+            }
+
+            //alert('The catalog is valid');
+
+            //showModal('You have uploaded valid catalog.');
+            //submitButton.disabled = false;
+        }
+        function showModal(message) {
+            //alert('The catalog is valid');
+            var modal = document.getElementById('modal');
+            var modalMessage = document.getElementById('modal-message');
+
+            modalMessage.textContent = message;
+            modal.style.display = 'block';
+            setTimeout(function () {
+                modal.style.display = 'none';
+            }, 3000); // Hide after 3 seconds
+        }
+
+        function UploadFileToPowerAutomate(inputFile) {
+
+            var _uploadImageFlowURL2 = "{{ UploadZipFlowURL }}";
+            
+            document.getElementById("statusMessage").style.display = "block";
+            var formData = new FormData();
+            formData.append("BU", getQueryParameter("unit"));
+            formData.append("fileName", inputFile.name);
+            formData.append("fileContent", inputFile);
+            formData.append("CatalogName", getQueryParameter("name"));
+            formData.append("CatalogNumber", getQueryParameter("number"));
+            formData.append("LastUpdatedVersion", getQueryParameter("version"));
+            formData.append("No.ofItems", getQueryParameter("items"));
+            formData.append("SupplierEmail", getQueryParameter("SupplierEmail"));
+            formData.append("SupplierAccountName", getQueryParameter("SupplierAccountName"));
+            formData.append("BaselineCatalogueGUID", getQueryParameter("BaselineCatalogueGUID"));
+
+
+
+            // Send the payload via AJAX
+            shell.ajaxSafePost({
+                type: "POST",
+
+                url: _uploadImageFlowURL2,
+                data: formData,
+                processData: false, // Prevent jQuery from processing the form data
+                contentType: false, // Prevent jQuery from setting the content-type header
+                success: function (response) {
+
+                    console.log('Success:', response);
+                    document.getElementById("statusMessage").style.display = "none";
+                    alert('Your catalog has been uploaded successfully!');
+                    window.location.href = '/Catalogue_History/';
+                    document.getElementById('zip-file-upload').value = '';
+                    document.getElementById('zip-file-name').textContent = '';
+
+                },
+                error: function (error) {
+
+                    console.error('Error:', error);
+                    document.getElementById("statusMessage").style.display = "none";
+                    alert('Your catalog upload failed. Please try again or contact SCM IT Support Team.');
+                    //window.location.href = '/';
+                }
+            });
+
+        }
+        var _uploadImageFlowURL = "{{ UploadCatalogFlowURL }}";
+
+
+        function UploadFileToBlob(inputFile) {
+            var reader = new FileReader();
+
+            reader.readAsDataURL(inputFile);
+
+            reader.onload = function () {
+                document.getElementById("statusMessage").style.display = "block";
+                var file = {
+                }
+                    ;
+                file.name = inputFile.name;
+                file.contentBytes = reader.result.split(',')[1];
+
+                var data = {
+            };
+                data["File Name"] = inputFile.name;
+                data["File Content"] = file;
+                data["BU"] = getQueryParameter("unit");
+                data["CatalogName"] = getQueryParameter("name");
+                data["CatalogNumber"] = getQueryParameter("number");
+                data["LastUpdatedVersion"] = getQueryParameter("version");
+                data["No.ofItems"] = getQueryParameter("items");
+                data["SupplierEmail"] = getQueryParameter("SupplierEmail");
+                data["SupplierAccountName"] = getQueryParameter("SupplierAccountName");
+                data["BaselineCatalogueGUID"] = getQueryParameter("BaselineCatalogueGUID");
+                var payload = {};
+                payload.eventData = JSON.stringify(data);
+
+                shell.ajaxSafePost({
+                    type: "POST", contentType: "application/json",
+                    url: _uploadImageFlowURL,
+                    data: JSON.stringify(payload),
+                    processData: false,
+                    global: false,
+                    success: function (response) {
+                        //console.log('Success:', response);
+                        document.getElementById("statusMessage").style.display = "none";
+                        alert('Your catalog has been uploaded successfully!');
+                        window.location.href = '/Catalogue_History/';
+                        document.getElementById('file-upload').value = '';
+                        document.getElementById('file-name').textContent = '';
+                    },
+                    error: function (error) {
+
+                        document.getElementById("statusMessage").style.display = "none";
+                        alert('Your catalog upload failed. Please try again or contact SCM IT Support Team.');
+                        console.error(error);
+                        window.location.href = '/';
+                    },
+                }
+                )
+                    .then(response => response.json())
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById("statusMessage").style.display = "none";
+                    });
+            };
+            reader.onerror = function (error) {
+                console.error('Error: ', error);
+            };
+        }
+
+        function handleSubmit(btn) {
+            var selectedFile;
+            var selectedFileType = document.querySelector('input[name="uploadFile"]:checked').value;
+
+            switch (selectedFileType) {
+                case 'yes':
+                    selectedFile = document.getElementById('zip-file-upload').files[0];
+                    if (selectedFile) {
+                        btn.disabled = true;
+                        UploadFileToPowerAutomate(selectedFile);
+
+                    } else {
+                        alert("Please select the valid ZIP file before submitting.");
+                    }
+                    break;
+                case 'no':
+                    selectedFile = document.getElementById('file-upload').files[0];
+                    if (selectedFile) {
+                        btn.disabled = true;
+                        UploadFileToBlob(selectedFile);
+                    } else {
+                        alert("Please select the valid catalog before submitting.");
+                    }
+                    break;
+            }
+        }
+
+        function handleCancel() {
+            var selectedFileType = document.querySelector('input[name="uploadFile"]:checked').value;
+            alert('You have canceled the upload process.');
+            window.location.href = '/';
+            switch (selectedFileType) {
+                case 'yes':
+                    document.getElementById('zip-file-upload').value = ''; // Reset ZIP file input
+                    document.getElementById('zip-file-name').textContent = 'No ZIP file chosen'; // Reset ZIP file name display
+                    break;
+                case 'no':
+                    document.getElementById('file-upload').value = ''; // Reset CSV/XLSX file input
+                    document.getElementById('file-name').textContent = ''; // Reset file name display
+                    break;
+            }
+
+
+        }
+
+    </script>
+</body>
+
+</html>

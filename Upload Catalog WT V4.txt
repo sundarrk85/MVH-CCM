@@ -1,0 +1,421 @@
+{% assign userEmail = user.emailaddress1 %}
+
+{% fetchxml requestData %}
+<fetch xmlns:generator='MarkMpn.SQL4CDS'>
+  <entity name='mvh_catalogs'>
+    <attribute name='mvh_catalogsid' />
+    <attribute name='createdon' />
+    <attribute name='mvh_noofitems' />
+    <attribute name='modifiedon' />
+    <attribute name='mvh_catalognumber' />
+    <attribute name='mvh_name' />
+    <attribute name='mvh_catalogversion' />
+    <attribute name='mvh_cataloguestatus' />
+    <attribute name='mvh_catalogtemplate' />
+   <link-entity name='account' from='accountid' to='mvh_supplieraccountid' link-type='outer'>
+      <attribute name='mvh_suppliername' alias="mvh_SupplierAccountName" />
+    </link-entity> 
+    
+
+    <link-entity name="mvh_businessunit" from="mvh_businessunitid" to="mvh_businessunit" link-type="outer">
+      <attribute name="mvh_name" alias="mvh_buname" />
+    </link-entity>
+    <link-entity name='contact' to='mvh_supplieraccountid' from='accountid' alias='c' link-type='inner'>
+      <attribute name='contactid' />
+      <filter>
+        <condition attribute='emailaddress1' operator='eq' value='{{ userEmail }}' />
+      </filter>
+      <order attribute='contactid' />
+    </link-entity>
+    <order attribute='mvh_catalogsid' />
+  </entity>
+</fetch>
+
+
+
+{% endfetchxml %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uploaded Catalog List</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --catalog-margin: 25px;
+    }
+
+    .margin-class {
+      margin: var(--catalog-margin);
+    }
+
+    .search-container {
+      position: relative;
+      width: calc(100% - 50px);
+      margin: var(--catalog-margin);
+      margin-bottom: 12px;
+    }
+
+    .search-container input[type="text"] {
+      width: 100%;
+      font-size: 16px;
+      padding: 12px 40px 12px 20px;
+      border: 1px solid #ddd;
+    }
+
+    .search-container .fa-search {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      font-size: 25px;
+      transform: translateY(-50%) rotate(90deg);
+      color: #aaa;
+    }
+     h1 {
+      font-size: 20px;
+    }
+
+        h1 strong {
+            font-weight: bold;
+        }
+        .margin-class {
+      margin: 25px;
+      
+    }
+
+    #myTable {
+      border-spacing: 0px;
+      width: 100%;
+      border: 0px solid #ddd;
+    }
+
+    #myTable th {
+      text-align: left;
+      padding: 12px;
+      position: relative;
+      //cursor: pointer;
+    }
+
+    #myTable th .sort-icon {
+      margin-left: 5px;
+      color: #A4A4A4;
+    }
+
+    #myTable th:hover .sort-icon, 
+    #myTable th:active .sort-icon {
+      color: black;
+    }
+
+    #myTable td {
+      text-align: left;
+      padding: 12px;
+    }
+
+    #myTable tr {
+      border-bottom: 1px solid #ddd;
+    }
+
+    #myTable tbody tr:nth-child(odd) {
+      background-color: #f2f2f2;
+    }
+
+    #myTable tr.header  {
+      cursor: pointer;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      margin-top: 10px;
+      background-color: #fff;
+      border: 0.5px solid #ddd;
+    }
+
+    .pagination .info {
+      display: flex;
+      align-items: center
+      flex-grow: 1;
+      text-align: left;
+      padding-left: 15px;
+    }
+
+    .pagination .controls {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      //justify-content: center;
+    }
+
+    .pagination .controls .arrow {
+      background-color: transparent;
+      border: none;
+      color: black;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 0 4px;
+    }
+
+    #page-info {
+      margin: 0 10px;
+    }
+
+    .CatalogListContainer {
+      margin: var(--catalog-margin);
+      padding: 20px;
+      background-color: #FFFFFF;
+      border: 0.5px solid #ddd;
+    }
+    .Excel-Icon {
+  width: 25px; /* Adjust size as needed */
+  height: 25px;
+  transition: filter 0.3s ease;
+   cursor: pointer;
+  
+}
+.Excel-Icon:hover {
+  opacity: 0.7;
+}
+.UploadCatalog-Icon {
+  width: 25px;
+  height: 25px;
+}
+.UploadCatalog-Icon {
+  transition: filter 0.3s ease; /* Smooth transition for the hover effect */
+  cursor: pointer;
+}
+
+.UploadCatalog-Icon:hover {
+  filter: invert(1); /* Inverts colors, typically making white icons black */
+}
+  </style>
+</head>
+<body style="background-color:#F4F4F4;">
+
+<h1 class="margin-class" style="font-size:20px;font-weight: bold;">Upload Catalog</h1>
+<div class="search-container">
+  <input type="text" id="myInput" onkeyup="filterTable()" placeholder="Search..." title="Search catalogue name, number, version..">
+  <i class="fa fa-search"></i>
+</div>
+
+<div class="CatalogListContainer margin-class">
+  <h2 style="font-size:18px;font-weight: bold;">Available Catalog List</h2>
+
+  <table id="myTable">
+    <thead>
+      <tr class="header">
+        <!--<th style="width:10%;" onclick="sortTable(0)">Catalogue Status<span class="sort-icon">⇅</span></th>-->
+        <th style="width:10%;" onclick="sortTable(1)">Number<span class="sort-icon">⇅</span></th>
+        <th style="width:15%;" onclick="sortTable(2)">Name<span class="sort-icon">⇅</span></th>
+        <th style="width:10%;" onclick="sortTable(3)">Items<span class="sort-icon">⇅</span></th>
+        <th style="width:10%;" onclick="sortTable(4)">BU<span class="sort-icon">⇅</span></th>
+        <th style="width:10%;" onclick="sortTable(5)">Version<span class="sort-icon">⇅</span></th>
+        <th style="width:10%;" onclick="sortTable(6)">Created<span class="sort-icon">⇅</span></th>
+        <th style="width:10%;" onclick="sortTable(7)">Updated<span class="sort-icon">⇅</span></th>
+        <th style="width:3%;"></th>
+        <th style="width:5%;"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for results in requestData.results.entities %}
+        <tr class="record-row" data-record-id="{{ results.mvh_catalogsid }}">
+          <!--<td>{{ results.mvh_cataloguestatus }}</td>-->
+         
+<td class="nav-to-catalog-items" style="text-decoration: none; color: black;" onclick="navigateToCatalogItemsPage({{ results.mvh_cataloguestatus }}', '{{ results.mvh_catalognumber }}', '{{ results.mvh_name }}', '{{ results.mvh_noofitems }}', '{{ results.mvh_buname }}', '{{ results.mvh_catalogversion }}', '{{ results.createdon }}', '{{ results.modifiedon }}','{{ results.mvh_catalogsid }}')">{{ results.mvh_catalognumber }}</td>
+<td class="nav-to-catalog-items" style="text-decoration: underline; color: black; cursor: pointer;" onclick="navigateToCatalogItemsPage('{{ results.mvh_cataloguestatus }}', '{{ results.mvh_catalognumber }}', '{{ results.mvh_name }}', '{{ results.mvh_noofitems }}', '{{ results.mvh_buname }}', '{{ results.mvh_catalogversion }}', '{{ results.createdon }}', '{{ results.modifiedon }}','{{ results.mvh_catalogsid }}')">{{ results.mvh_name }}</td>
+          
+          <td>{{ results.mvh_noofitems }}</td>
+          <td>{{ results.mvh_buname }}</td>
+          <td>{{ results.mvh_catalogversion }}</td>
+          <td>{{ results.createdon | date: 'dd/MM/yyyy HH:mm'}}</td>
+          <td>{{ results.modifiedon | date: 'dd/MM/yyyy HH:mm'}}</td>
+          <!--<td><i class="fas fa-file-excel" style="font-size:30px;color:green; cursor: pointer;" onclick="downloadAttachment('{{ results.mvh_catalogtemplate.Url }}')"></i></td>-->
+          <td>
+  <img src="{{ snippets['MVH Excel Download Icon'] }}" 
+       alt="Excel Download Icon" 
+       class="Excel-Icon" 
+       onclick="downloadAttachment('{{ results.mvh_catalogtemplate.Url }}')" />
+</td>
+          <!--<td>
+            <i class="material-icons" style="font-size:30px;color:Black; text-shadow: 1px 1px 0 #fff; cursor: pointer;" onclick="navigateToEditPage('{{ results.mvh_cataloguestatus }}', '{{ results.mvh_catalognumber }}', '{{ results.mvh_name }}', '{{ results.mvh_noofitems }}', '{{ results.mvh_buname }}', '{{ results.mvh_catalogversion }}', '{{ results.createdon }}', '{{ results.modifiedon }}','{{ results.mvh_catalogsid }}','{{ userEmail }}')">file_upload</i>
+          </td> -->
+          <td>
+          <img src="{{ snippets['MVH Upload Catalog Icon'] }}" 
+       alt="Upload Catalog Icon" 
+       class="UploadCatalog-Icon" 
+       onclick="navigateToEditPage('{{ results.mvh_cataloguestatus }}', '{{ results.mvh_catalognumber }}', '{{ results.mvh_name }}', '{{ results.mvh_noofitems }}', '{{ results.mvh_buname }}', '{{ results.mvh_catalogversion }}', '{{ results.createdon }}', '{{ results.modifiedon }}','{{ results.mvh_catalogsid }}','{{ userEmail }}','{{ results.mvh_SupplierAccountName }}')" />
+</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="pagination margin-class">
+  <div class="info" id="pagination-info"></div>
+  <div class="controls" id="pagination-controls">
+    <button class="arrow" onclick="changePage(-1)">&#8592;</button>
+    <span id="page-info"></span>
+    <button class="arrow" onclick="changePage(1)">&#8594;</button>
+  </div>
+</div>
+
+<script>
+function downloadAttachment(url) {
+  const anchor = document.createElement('a');
+  anchor.style.display = 'none';
+  anchor.href = url;
+  anchor.setAttribute('download', '');
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+}
+
+  const rowsPerPage = 5;
+  let currentPage = 1;
+  let totalRows = 0;
+
+  function navigateToEditPage(status, number, name, items, unit, version, created, modified,BaselineCatalogueGUID,SupplierEmail,SupplierAccountName) {
+    const url = new URL("https://supp-catalog-mgmt.powerappsportals.com/Update_Catalogue/");
+    url.searchParams.append("status", status);
+    url.searchParams.append("number", number);
+    url.searchParams.append("name", name);
+    url.searchParams.append("items", items);
+    url.searchParams.append("unit", unit);
+    url.searchParams.append("version", version);
+    url.searchParams.append("created", created);
+    url.searchParams.append("modified", modified);
+    url.searchParams.append("BaselineCatalogueGUID", BaselineCatalogueGUID);
+    url.searchParams.append("SupplierEmail", SupplierEmail);
+    url.searchParams.append("SupplierAccountName",SupplierAccountName);
+
+    window.location.href = url.toString();
+  }
+
+
+   function navigateToCatalogItemsPage(status, number, name, items, unit, version, created, modified,supplierCatalogueId) {
+    const url = new URL("https://supp-catalog-mgmt.powerappsportals.com/Catalogue_Items/"); 
+    url.searchParams.append("status", status);
+    url.searchParams.append("number", number);
+    url.searchParams.append("name", name);
+    url.searchParams.append("items", items);
+    url.searchParams.append("unit", unit);
+    url.searchParams.append("version", version);
+    url.searchParams.append("created", created);
+    url.searchParams.append("modified", modified);
+url.searchParams.append("BaselineCatalogueGUID", BaselineCatalogueGUID);
+    window.location.href = url.toString();
+  }
+
+  function filterTable() {
+  const input = document.getElementById("myInput").value.toUpperCase();
+  const table = document.getElementById("myTable");
+  const rows = table.getElementsByTagName("tr");
+  let visibleRows = [];
+
+  for (let i = 1; i < rows.length; i++) {
+    let row = rows[i];
+    row.style.display = "none";
+    const cells = row.getElementsByTagName("td");
+    for (let cell of cells) {
+      if (cell.textContent.toUpperCase().indexOf(input) > -1) {
+        row.style.display = "";
+        visibleRows.push(row);
+        break;
+      }
+    }
+  }
+  setupPagination(visibleRows);
+}
+
+function sortTable(n) {
+  const table = document.getElementById("myTable");
+  let rows = Array.from(table.rows).slice(1);
+  const dir = table.getAttribute('data-sort-dir') === 'asc' ? 'desc' : 'asc';
+  table.setAttribute('data-sort-dir', dir);
+
+  rows.sort((a, b) => {
+    let x = a.getElementsByTagName("TD")[n].textContent.toLowerCase();
+    let y = b.getElementsByTagName("TD")[n].textContent.toLowerCase();
+    if (dir === 'asc') {
+      return x > y ? 1 : -1;
+    } else {
+      return x < y ? 1 : -1;
+    }
+  });
+
+  for (let row of rows) {
+    table.getElementsByTagName('tbody')[0].appendChild(row);
+  }
+
+  setupPagination(rows);
+}
+
+function setupPagination(rows) {
+  totalRows = rows.length;
+  const paginationInfo = document.getElementById("pagination-info");
+  const paginationControls = document.getElementById("pagination-controls");
+  paginationControls.innerHTML = `
+    <button class="arrow" onclick="changePage(-1)">&#8592;</button>
+    <span id="page-info"></span>
+    <button class="arrow" onclick="changePage(1)">&#8594;</button>
+  `;
+  showPage(currentPage, rows);
+}
+
+function showPage(page, rows) {
+  currentPage = page;
+  const start = (page - 1) * rowsPerPage;
+  const end = start + rowsPerPage;
+
+  for (let i = 0; i < rows.length; i++) {
+    rows[i].style.display = i >= start && i < end ? "" : "none";
+  }
+
+  const paginationInfo = document.getElementById("pagination-info");
+  paginationInfo.innerText = `Total: ${start + 1}-${Math.min(end, totalRows)} of ${totalRows}`;
+
+  const pageInfo = document.getElementById("page-info");
+  pageInfo.innerText = `Page ${currentPage}`;
+
+  // Center the page info
+  const controls = document.querySelector(".pagination .controls");
+  const controlsWidth = controls.offsetWidth;
+  const pageInfoWidth = pageInfo.offsetWidth;
+  
+  const buttons = document.querySelectorAll(".pagination .controls .arrow");
+  buttons.forEach(button => {
+    button.style.display = "inline-block";
+  });
+
+  if (currentPage === 1) {
+    buttons[0].style.display = "none"; // Hide the left arrow on the first page
+  }
+  if (currentPage === Math.ceil(totalRows / rowsPerPage)) {
+    buttons[1].style.display = "none"; // Hide the right arrow on the last page
+  }
+}
+
+function changePage(direction) {
+  const numPages = Math.ceil(totalRows / rowsPerPage);
+  if (currentPage + direction > 0 && currentPage + direction <= numPages) {
+    showPage(currentPage + direction, Array.from(document.getElementById("myTable").rows).slice(1));
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const rows = Array.from(document.getElementById("myTable").rows).slice(1);
+  setupPagination(rows);
+});
+</script>
+
+</body>
+</html>

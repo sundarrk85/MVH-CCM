@@ -1,0 +1,414 @@
+{% fetchxml requestData %}
+<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false">
+  <entity name="mvh_catalogs">
+    <attribute name="mvh_cataloguename" />
+    <attribute name="mvh_noofitems" />
+      <!-- Lookup: Business Unit -->
+    <link-entity name="mvh_businessunit" from="mvh_businessunitid" to="cr42e_bu" link-type="outer">
+      <attribute name="mvh_name" alias="mvh_buname" />
+    </link-entity>
+    <attribute name="mvh_lastupdatedversion" />    
+    <attribute name="createdon" />    
+    <attribute name="modifiedon" />    
+    <order attribute="createdon" descending="false" />
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --catalog-margin: 25px;
+    }
+
+    .margin-class {
+      margin: var(--catalog-margin);
+    }
+.breadcrumb-container {
+            width: 100%;
+            display: flex;
+            align-items: left;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .breadcrumb a {
+            text-decoration: none;
+            color: #555;
+            margin-right: 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+    .search-container {
+      position: relative;
+      width: calc(100% - 50px);
+      margin: var(--catalog-margin);
+      margin-bottom: 12px;
+    }
+
+    .search-container input[type="text"] {
+      width: 100%;
+      font-size: 16px;
+      padding: 12px 40px 12px 20px;
+      border: 1px solid #ddd;
+    }
+
+    .search-container .fa-search {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      font-size: 25px;
+      transform: translateY(-50%) rotate(90deg);
+      color: #aaa;
+    }
+
+    #myTable {
+      border-spacing: 0px;
+      width: 100%;
+      border: 0px solid #ddd;
+    }
+
+    #myTable th {
+      text-align: left;
+      padding: 12px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    #myTable th .sort-icon {
+      margin-left: 5px;
+      color: #A4A4A4;
+    }
+
+    #myTable th:hover .sort-icon, 
+    #myTable th:active .sort-icon {
+      color: black;
+    }
+
+    #myTable td {
+      text-align: left;
+      padding: 12px;
+    }
+
+    #myTable tr {
+      border-bottom: 1px solid #ddd;
+    }
+
+    #myTable tbody tr:nth-child(odd) {
+      background-color: #f2f2f2;
+    }
+
+    #myTable tr.header, #myTable tr:hover {
+      cursor: pointer;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      margin-top: 10px;
+      background-color: #fff;
+      border: 0.5px solid #ddd;
+    }
+
+    .pagination .info {
+      display: flex;
+      align-items: center;
+      padding-left: 15px;
+    }
+
+    .pagination .controls {
+      display: flex;
+      align-items: center;
+    }
+
+    .pagination .controls .arrow {
+      background-color: transparent;
+      border: none;
+      color: black;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 0 4px;
+    }
+
+    .CatalogListContainer {
+      margin: var(--catalog-margin);
+      padding: 20px;
+      background-color: #FFFFFF;
+      border: 0.5px solid #ddd;
+    }
+  </style>
+</head>
+
+<body style="background-color:#F4F4F4;">
+
+<h2 class="margin-class" style="font-size:20px;font-weight: bold;">History</h2>
+
+
+<div class="breadcrumb-container">
+            <div class="breadcrumb">
+                <a href="#"><i class="material-icons" style="vertical-align: middle;">arrow_back</i></a>
+                
+            </div>
+        </div>
+
+<div class="search-container">
+  <input type="text" id="myInput" onkeyup="filterTable()" placeholder="Search..." title="Search catalogue name, number, version..">
+  <i class="fa fa-search"></i>
+</div>
+
+<div class="CatalogListContainer margin-class">
+  <h3>Catalogue List</h3>
+
+  <table id="myTable">
+    <thead>
+      <tr class="header">
+        <th style="width:12%;" onclick="sortTable(0)">Catalogue Name<span class="sort-icon">⇅</span></th>
+        <th style="width:14%;" onclick="sortTable(1)">No. of Items<span class="sort-icon">⇅</span></th>
+        <th style="width:14%;" onclick="sortTable(2)">Business Units<span class="sort-icon">⇅</span></th>
+        <th style="width:14%;" onclick="sortTable(3)">Last Updated Version<span class="sort-icon">⇅</span></th>
+        <th style="width:17%;" onclick="sortTable(4)">Created<span class="sort-icon">⇅</span></th>
+        <th style="width:17%;" onclick="sortTable(5)">Last Updated<span class="sort-icon">⇅</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        
+        <td>BP_MWI_Punchout_Hospice</td>
+        <td>2124</td>
+        <td>BluePearl</td>
+        <td>1.2</td>
+        <td>24/02/2024 05:30AM</td>
+        <td>25/02/2024 06:35AM</td>
+      </tr>
+      <tr>
+        
+        <td>BP_MWI_Punchout_Hospice</td>
+        <td>2126</td>
+        <td>BluePearl</td>
+        <td>1.6</td>
+        <td>24/02/2024 05:30AM</td>
+        <td>25/02/2024 06:35AM</td>
+      </tr>
+<tr>
+        
+        <td>BP_MWI_Punchout_Hospice</td>
+        <td>2126</td>
+        <td>BluePearl</td>
+        <td>1.9</td>
+        <td>24/02/2024 05:30AM</td>
+        <td>25/02/2024 06:35AM</td>
+      </tr>
+<tr>
+        <td>BP_MWI_Punchout_Hospice</td>
+        <td>2126</td>
+        <td>BluePearl</td>
+        <td>1.8</td>
+        <td>24/02/2024 05:30AM</td>
+        <td>25/02/2024 06:35AM</td>
+      </tr>
+<tr>
+        
+        <td>BP_MWI_Punchout_Hospice</td>
+        <td>2126</td>
+        <td>BluePearl</td>
+        <td>1.4</td>
+        <td>24/02/2024 05:30AM</td>
+        <td>25/02/2024 06:35AM</td>
+      </tr>
+<tr>
+        
+        <td>BP_MWI_Punchout_Hospice</td>
+        <td>2126</td>
+        <td>BluePearl</td>
+        <td>1.4</td>
+        <td>24/02/2024 05:30AM</td>
+        <td>25/02/2024 06:35AM</td>
+      </tr>
+<tr>
+        
+        <td>BP_MWI_Punchout_Hospice</td>
+        <td>2126</td>
+        <td>BluePearl</td>
+        <td>1.5</td>
+        <td>24/02/2024 05:30AM</td>
+        <td>25/02/2024 06:35AM</td>
+      </tr>
+<tr>
+        
+        <td>BP_MWI_Punchout_Hospice</td>
+        <td>2126</td>
+        <td>BluePearl</td>
+        <td>1.6</td>
+        <td>24/02/2024 05:30AM</td>
+        <td>25/02/2024 06:35AM</td>
+      </tr>
+<tr>
+        
+        <td>BP_MWI_Punchout_Hospice</td>
+        <td>2126</td>
+        <td>BluePearl</td>
+        <td>1.7</td>
+        <td>24/02/2024 05:30AM</td>
+        <td>25/02/2024 06:35AM</td>
+      </tr>
+<tr>
+        
+        <td>BP_MWI_Punchout_Hospice</td>
+        <td>2126</td>
+        <td>BluePearl</td>
+        <td>1.8</td>
+        <td>24/02/2024 05:30AM</td>
+        <td>25/02/2024 06:35AM</td>
+      </tr>
+<tr>
+        <td>BP_MWI_Punchout_Hospice</td>
+        <td>2126</td>
+        <td>BluePearl</td>
+        <td>1.9</td>
+        <td>24/02/2024 05:30AM</td>
+        <td>25/02/2024 06:35AM</td>
+      </tr>
+<tr>
+        <td>BP_MWI_Punchout_Hospice</td>
+        <td>2126</td>
+        <td>BluePearl</td>
+        <td>1.4</td>
+        <td>24/02/2024 05:30AM</td>
+        <td>25/02/2024 06:35AM</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="pagination margin-class">
+  <div class="info" id="pagination-info"></div>
+  <div class="controls" id="pagination-controls">
+    <button class="arrow" onclick="changePage(-1)">&#8592;</button>
+    <span id="page-info"></span>
+    <button class="arrow" onclick="changePage(1)">&#8594;</button>
+  </div>
+</div>
+
+<script>
+const rowsPerPage = 5;
+let currentPage = 1;
+let totalRows = 0;
+
+function filterTable() {
+  const input = document.getElementById("myInput").value.toUpperCase();
+  const table = document.getElementById("myTable");
+  const rows = table.getElementsByTagName("tr");
+  let visibleRows = [];
+
+  for (let i = 1; i < rows.length; i++) {
+    let row = rows[i];
+    row.style.display = "none";
+    const cells = row.getElementsByTagName("td");
+    for (let cell of cells) {
+      if (cell.textContent.toUpperCase().indexOf(input) > -1) {
+        row.style.display = "";
+        visibleRows.push(row);
+        break;
+      }
+    }
+  }
+  setupPagination(visibleRows);
+}
+
+function sortTable(n) {
+  const table = document.getElementById("myTable");
+  let rows = Array.from(table.rows).slice(1);
+  const dir = table.getAttribute('data-sort-dir') === 'asc' ? 'desc' : 'asc';
+  table.setAttribute('data-sort-dir', dir);
+
+  rows.sort((a, b) => {
+    let x = a.getElementsByTagName("TD")[n].textContent.toLowerCase();
+    let y = b.getElementsByTagName("TD")[n].textContent.toLowerCase();
+    if (dir === 'asc') {
+      return x > y ? 1 : -1;
+    } else {
+      return x < y ? 1 : -1;
+    }
+  });
+
+  for (let row of rows) {
+    table.getElementsByTagName('tbody')[0].appendChild(row);
+  }
+
+  setupPagination(rows);
+}
+
+function setupPagination(rows) {
+  totalRows = rows.length;
+  const paginationInfo = document.getElementById("pagination-info");
+  const paginationControls = document.getElementById("pagination-controls");
+  paginationControls.innerHTML = `
+    <button class="arrow" onclick="changePage(-1)">&#8592;</button>
+    <span id="page-info"></span>
+    <button class="arrow" onclick="changePage(1)">&#8594;</button>
+  `;
+  showPage(currentPage, rows);
+}
+
+function showPage(page, rows) {
+  currentPage = page;
+  const start = (page - 1) * rowsPerPage;
+  const end = start + rowsPerPage;
+
+  for (let i = 0; i < rows.length; i++) {
+    rows[i].style.display = i >= start && i < end ? "" : "none";
+  }
+
+  const paginationInfo = document.getElementById("pagination-info");
+  paginationInfo.innerText = `Total: ${start + 1}-${Math.min(end, totalRows)} of ${totalRows}`;
+
+  const pageInfo = document.getElementById("page-info");
+  pageInfo.innerText = `Page ${currentPage}`;
+
+  const buttons = document.querySelectorAll(".pagination .controls .arrow");
+  buttons.forEach(button => {
+    button.style.display = "inline-block";
+  });
+
+  if (currentPage === 1) {
+    buttons[0].style.display = "none"; // Hide the left arrow on the first page
+  }
+  if (currentPage === Math.ceil(totalRows / rowsPerPage)) {
+    buttons[1].style.display = "none"; // Hide the right arrow on the last page
+  }
+}
+
+function changePage(direction) {
+  const numPages = Math.ceil(totalRows / rowsPerPage);
+  if (currentPage + direction > 0 && currentPage + direction <= numPages) {
+    showPage(currentPage + direction, Array.from(document.getElementById("myTable").rows).slice(1));
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const rows = Array.from(document.getElementById("myTable").rows).slice(1);
+  setupPagination(rows);
+});
+</script>
+
+</body>
+</html>
